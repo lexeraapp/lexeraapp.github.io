@@ -1,0 +1,56 @@
+/* Abyssal Liturgy, carried over from hassanireza.github.io, extended with learning-state colors. */
+:root {
+  --bg: #08090b;
+  --bg-2: #0d1013;
+  --bg-3: #12161a;
+  --surface: rgba(214, 219, 222, 0.035);
+  --surface-2: rgba(214, 219, 222, 0.06);
+  --border: rgba(214, 219, 222, 0.08);
+  --border-hover: rgba(214, 219, 222, 0.2);
+
+  --text: #e6e3da;
+  --text-2: #9aa3a8;
+  --text-3: #7f8589;
+
+  --accent: #7c8891;
+  --accent-dim: rgba(124, 136, 145, 0.13);
+  --accent-bright: #c9cfd2;
+
+  /* Feedback: desaturated so nothing shouts. Always paired with an icon or text, never color alone. */
+  --ok: #9dbba9;
+  --ok-dim: rgba(157, 187, 169, 0.12);
+  --near: #cdbb8c;
+  --near-dim: rgba(205, 187, 140, 0.12);
+  --bad: #c88f86;
+  --bad-dim: rgba(200, 143, 134, 0.12);
+
+  --radius: 2px;
+  --radius-lg: 4px;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.45), 0 8px 40px rgba(0, 0, 0, 0.55);
+  --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-liturgy: cubic-bezier(0.16, 0.4, 0.15, 1);
+
+  --font-display: "Cormorant Garamond", "EB Garamond", Georgia, serif;
+  --font-body: "Jost", "DM Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --s1: 4px; --s2: 8px; --s3: 16px; --s4: 24px; --s5: 32px; --s6: 48px;
+  --col: 520px;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --tab-h: 64px;
+
+  /* The single light source. Its tint shifts with the phase you are in. */
+  --light: rgba(124, 136, 145, 0.07);
+}
+:root[data-phase="intermediate"] { --light: rgba(118, 150, 158, 0.085); --accent: #78919a; }
+:root[data-phase="advanced"] { --light: rgba(201, 191, 166, 0.075); --accent: #a39d8c; }
+
+@keyframes surface { from { opacity: 0; filter: blur(6px) brightness(0.7); } to { opacity: 1; filter: blur(0) brightness(1); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(18px); filter: blur(2px); } to { opacity: 1; transform: none; filter: blur(0); } }
+@keyframes breathe { 0%, 100% { opacity: 0.35; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.06); } }
+@keyframes drift { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+@keyframes rise { from { opacity: 0; transform: translateY(100%); } to { opacity: 1; transform: none; } }
+@keyframes glow { 0% { box-shadow: 0 0 0 0 var(--ok-dim); } 100% { box-shadow: 0 0 0 14px transparent; } }
+@keyframes draw { from { stroke-dashoffset: var(--len, 300); } to { stroke-dashoffset: var(--off, 0); } }

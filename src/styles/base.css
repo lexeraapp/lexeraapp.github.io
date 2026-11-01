@@ -1,0 +1,80 @@
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; height: 100%; }
+body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100%;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+  touch-action: manipulation;
+}
+#root { min-height: 100dvh; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+input { font: inherit; color: inherit; }
+::selection { background: rgba(124, 136, 145, 0.28); }
+:focus-visible { outline: 1px solid var(--accent-bright); outline-offset: 3px; }
+button, a, .tile, .opt { user-select: none; -webkit-user-select: none; }
+svg { display: block; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+h1, h2, h3 { font-family: var(--font-display); font-weight: 300; font-style: italic; line-height: 1.1; letter-spacing: -0.01em; }
+h1 { font-size: clamp(2.2rem, 9vw, 3rem); }
+h2 { font-size: 1.7rem; }
+h3 { font-size: 1.3rem; }
+.mono { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.02em; color: var(--text-3); }
+.num { font-family: var(--font-display); font-weight: 500; font-variant-numeric: lining-nums; }
+.muted { color: var(--text-2); }
+.dim { color: var(--text-3); }
+.tr { font-family: var(--font-display); font-weight: 500; letter-spacing: 0; }
+
+/* Layout */
+.app { position: relative; min-height: 100dvh; }
+.col { position: relative; z-index: 1; width: 100%; max-width: var(--col); margin: 0 auto; }
+.screen {
+  position: relative; z-index: 1; width: 100%; max-width: var(--col); margin: 0 auto;
+  padding: calc(var(--safe-t) + 18px) 20px calc(var(--tab-h) + var(--safe-b) + 32px);
+  animation: surface 0.9s var(--ease-liturgy) both;
+}
+.stack { display: flex; flex-direction: column; gap: var(--s3); }
+.row { display: flex; align-items: center; gap: var(--s2); }
+.between { justify-content: space-between; }
+.grow { flex: 1; min-width: 0; }
+
+/* Surfaces and controls */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--s3); backdrop-filter: blur(6px); }
+.card.tap { transition: border-color 0.4s var(--ease), background 0.4s var(--ease); }
+.card.tap:active { background: var(--surface-2); border-color: var(--border-hover); }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 var(--s4); width: 100%;
+  border: 1px solid var(--border-hover); border-radius: var(--radius); font-weight: 400; letter-spacing: 0.02em;
+  transition: background 0.4s var(--ease), color 0.4s var(--ease), border-color 0.4s var(--ease), opacity 0.3s;
+}
+.btn:active { background: var(--surface-2); }
+.btn.primary { background: var(--text); color: var(--bg); border-color: var(--text); }
+.btn.primary:active { background: var(--accent-bright); }
+.btn.ghost { border-color: transparent; color: var(--text-2); }
+.btn.sm { min-height: 40px; padding: 0 var(--s3); width: auto; font-size: 0.9rem; }
+.btn:disabled { opacity: 0.35; pointer-events: none; }
+.hair { height: 1px; background: var(--border); border: 0; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border: 1px solid var(--border); border-radius: 99px; font-size: 0.78rem; color: var(--text-2); }
+
+/* Progress rail */
+.rail { height: 2px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.rail > i { display: block; height: 100%; background: var(--accent-bright); transition: width 0.9s var(--ease-liturgy); }
+
+/* Scroll-free page headings */
+.eyebrow { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-3); }
+.page-title { display: flex; flex-direction: column; gap: 6px; margin: 6px 0 var(--s4); }
+
+/* Wide screens: the app is a centered column in the same void */
+@media (min-width: 700px) {
+  .col, .screen { border-inline: 1px solid var(--border); }
+  .screen { min-height: 100dvh; background: rgba(8, 9, 11, 0.55); }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
+:root[data-motion="reduced"] *, :root[data-motion="reduced"] *::before, :root[data-motion="reduced"] *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
