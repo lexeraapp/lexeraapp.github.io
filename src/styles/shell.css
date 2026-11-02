@@ -9,6 +9,9 @@
 }
 .backdrop-vignette { background: radial-gradient(ellipse 90% 60% at 50% 110%, rgba(0, 0, 0, 0.6), transparent 70%); }
 
+/* Status bar scrim: keeps the clock and battery readable above scrolling content in the installed app. */
+body::before { content: ""; position: fixed; z-index: 40; top: 0; left: 0; right: 0; height: var(--top); pointer-events: none; background: linear-gradient(var(--bg) 55%, transparent); }
+
 /* Tab bar */
 .tabbar { position: fixed; z-index: 20; left: 0; right: 0; bottom: 0; padding-bottom: var(--safe-b); background: linear-gradient(to top, rgba(8, 9, 11, 0.96) 55%, rgba(8, 9, 11, 0)); backdrop-filter: blur(10px); }
 .tabbar-in { max-width: var(--col); margin: 0 auto; height: var(--tab-h); display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--border); }

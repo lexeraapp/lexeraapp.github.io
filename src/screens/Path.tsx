@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { PHASE_INFO } from "../content/ContentLibrary.ts";
 import { PHASES, type Lesson, type PhaseId, type Unit } from "../core/types.ts";
@@ -129,7 +130,7 @@ export function Path() {
 
       {units.map((u) => <UnitPath key={u.id} unit={u} onPick={pick} />)}
 
-      {sheet && (
+      {sheet && createPortal(
         <div className="sheet-wrap" onClick={() => setSheet(null)}>
           <div className="sheet" role="dialog" aria-label={sheet.title} onClick={(e) => e.stopPropagation()}>
             <div className="sheet-grab" />
@@ -146,7 +147,8 @@ export function Path() {
               <button className="btn primary" onClick={() => nav(`/play/lesson/${sheet.id}`)}>{open === "done" ? "Play again" : "Start lesson"}</button>
             )}
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </main>
   );
