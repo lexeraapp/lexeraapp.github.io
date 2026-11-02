@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 import { PHASES, type PhaseId } from "../../core/types.ts";
 import type { Answered, PracticeSession } from "../../engine/PracticeSession.ts";
@@ -130,7 +131,7 @@ export function Play() {
         </footer>
       )}
 
-      {leave && (
+      {leave && createPortal(
         <div className="sheet-wrap" onClick={() => setLeave(false)}>
           <div className="sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Leave session">
             <div className="sheet-grab" />
@@ -139,7 +140,8 @@ export function Play() {
             <button className="btn primary" onClick={() => setLeave(false)}>Keep going</button>
             <button className="btn ghost" onClick={() => (speed ? (session.finish(), setOver(true), setLeave(false)) : nav("/", { replace: true }))}>{speed ? "End round" : "Leave"}</button>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </main>
   );

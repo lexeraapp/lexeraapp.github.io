@@ -33,6 +33,14 @@ describe("app smoke test", () => {
     expect(host.textContent).toContain("Today");
     expect(host.textContent).toContain("Sounds and greetings");
 
+    // The lesson sheet must open, and live outside the animated screen so nothing can trap or blur it.
+    await click(host.querySelector(".node.open"));
+    const sheet = document.body.querySelector(".sheet-wrap");
+    expect(sheet, "sheet opens").toBeTruthy();
+    expect(host.contains(sheet), "sheet is portalled out of the screen").toBe(false);
+    expect(sheet?.textContent).toContain("Start lesson");
+    await click(sheet);
+
     for (const [hash, needle] of [["/practice", "Harmony gym"], ["/atlas", "Everything you have met"], ["/atlas/note/b2", "To be"], ["/you", "Badges"], ["/", "Today"]] as const) {
       await go(hash);
       expect(host.textContent, hash).toContain(needle);

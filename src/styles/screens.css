@@ -106,7 +106,7 @@
 .code:focus { border-color: var(--border-hover); }
 
 /* Summary */
-.summary { padding-top: calc(var(--safe-t) + 40px); }
+.summary { padding-top: calc(var(--top) + 40px); }
 .summary-msg { margin-top: 8px; max-width: 34ch; }
 .big-stars { display: flex; gap: 14px; margin: 22px 0 4px; }
 .big-stars span { color: var(--text-3); opacity: 0; animation: fadeUp 0.9s var(--ease-liturgy) both; }

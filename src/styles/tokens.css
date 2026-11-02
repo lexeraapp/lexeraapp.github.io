@@ -40,15 +40,18 @@
   --safe-t: env(safe-area-inset-top, 0px);
   --safe-b: env(safe-area-inset-bottom, 0px);
   --tab-h: 64px;
+  /* Space under the status bar. An installed iPhone app draws beneath a translucent status bar. */
+  --top: var(--safe-t);
 
   /* The single light source. Its tint shifts with the phase you are in. */
   --light: rgba(124, 136, 145, 0.07);
 }
+@media (display-mode: standalone) { :root { --top: max(var(--safe-t), 24px); } }
 :root[data-phase="intermediate"] { --light: rgba(118, 150, 158, 0.085); --accent: #78919a; }
 :root[data-phase="advanced"] { --light: rgba(201, 191, 166, 0.075); --accent: #a39d8c; }
 
-@keyframes surface { from { opacity: 0; filter: blur(6px) brightness(0.7); } to { opacity: 1; filter: blur(0) brightness(1); } }
-@keyframes fadeUp { from { opacity: 0; transform: translateY(18px); filter: blur(2px); } to { opacity: 1; transform: none; filter: blur(0); } }
+@keyframes surface { from { opacity: 0; filter: blur(6px) brightness(0.7); } to { opacity: 1; filter: none; } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(18px); filter: blur(2px); } to { opacity: 1; transform: none; filter: none; } }
 @keyframes breathe { 0%, 100% { opacity: 0.35; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.06); } }
 @keyframes drift { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
 @keyframes rise { from { opacity: 0; transform: translateY(100%); } to { opacity: 1; transform: none; } }
