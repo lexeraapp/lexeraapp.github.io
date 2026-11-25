@@ -49,7 +49,7 @@ export function Summary({ session }: { session: PracticeSession }) {
 
       <div className="stat-grid three">
         <div className="card stat"><b className="num">{Math.round(sum.accuracy * 100)}%</b><span className="dim">accuracy</span></div>
-        <div className="card stat"><b className="num">+{sum.xp}</b><span className="dim">xp{sum.bonusXp ? ` (${sum.bonusXp} bonus)` : ""}</span></div>
+        <div className="card stat"><b className="num">+{res ? res.xp : sum.xp}</b><span className="dim">xp{res && res.repeatFactor < 1 ? " (repeat)" : sum.bonusXp ? ` (${sum.bonusXp} bonus)` : ""}</span></div>
         <div className="card stat"><b className="num">{speed ? sum.bestCombo : secs}</b><span className="dim">{speed ? "best run" : "seconds"}</span></div>
       </div>
 
@@ -62,6 +62,7 @@ export function Summary({ session }: { session: PracticeSession }) {
       </section>
 
       <div className="stack" style={{ marginTop: 14, gap: 10 }}>
+        {res && res.repeatFactor < 1 && <div className="card row"><Icon name="info" size={20} /><span>You already played this today, so it paid {Math.round(res.repeatFactor * 100)}% xp. Try something new for full xp.</span></div>}
         {res?.streakExtended && <div className="card row"><Icon name="ember" size={20} fill /><span>Streak: {res.streakCount} {res.streakCount === 1 ? "day" : "days"}{res.earnedFreeze ? ". You earned a streak freeze." : ""}</span></div>}
         {res?.goalReached && <div className="card row"><Icon name="target" size={20} /><span>Daily goal reached.</span></div>}
         {res?.unlockedPhase && <div className="card row"><Icon name="flag" size={20} /><span>The {res.unlockedPhase} phase is open.</span></div>}
