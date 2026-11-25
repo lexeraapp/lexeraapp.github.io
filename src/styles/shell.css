@@ -12,12 +12,13 @@
 /* Status bar scrim: keeps the clock and battery readable above scrolling content in the installed app. */
 body::before { content: ""; position: fixed; z-index: 40; top: 0; left: 0; right: 0; height: var(--top); pointer-events: none; background: linear-gradient(var(--bg) 55%, transparent); }
 
-/* Tab bar */
-.tabbar { position: fixed; z-index: 20; left: 0; right: 0; bottom: 0; padding-bottom: var(--safe-b); background: linear-gradient(to top, rgba(8, 9, 11, 0.96) 55%, rgba(8, 9, 11, 0)); backdrop-filter: blur(10px); }
+/* Tab bar: opaque and crisp, no blur or fade, pinned to the very bottom on its own layer so it never moves between pages. */
+.tabbar { position: fixed; z-index: 20; left: 0; right: 0; bottom: 0; padding-bottom: var(--tab-pad); background: var(--bg); transform: translateZ(0); }
 .tabbar-in { max-width: var(--col); margin: 0 auto; height: var(--tab-h); display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--border); }
-.tab { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--text-3); font-size: 0.72rem; transition: color 0.5s var(--ease); }
+.tab { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--text-3); font-size: 0.72rem; transition: color 0.2s var(--ease); }
+.tab svg { flex: none; }
 .tab.on { color: var(--text); }
-.tab.on::before { content: ""; position: absolute; top: -1px; left: 28%; right: 28%; height: 1px; background: var(--accent-bright); box-shadow: 0 0 14px 1px var(--accent); }
+.tab.on::before { content: ""; position: absolute; top: -1px; left: 28%; right: 28%; height: 1px; background: var(--accent-bright); box-shadow: 0 0 10px 0 var(--accent); }
 
 /* HUD */
 .hud { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--s4); }

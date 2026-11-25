@@ -37,8 +37,8 @@ h3 { font-size: 1.3rem; }
 .col { position: relative; z-index: 1; width: 100%; max-width: var(--col); margin: 0 auto; }
 .screen {
   position: relative; z-index: 1; width: 100%; max-width: var(--col); margin: 0 auto;
-  padding: calc(var(--top) + 18px) 20px calc(var(--tab-h) + var(--safe-b) + 32px);
-  animation: surface 0.9s var(--ease-liturgy) backwards;
+  padding: calc(var(--top) + 18px) 20px calc(var(--tab-total) + 32px);
+  animation: surface 0.35s var(--ease-out) backwards;
 }
 .stack { display: flex; flex-direction: column; gap: var(--s3); }
 .row { display: flex; align-items: center; gap: var(--s2); }
@@ -46,7 +46,7 @@ h3 { font-size: 1.3rem; }
 .grow { flex: 1; min-width: 0; }
 
 /* Surfaces and controls */
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--s3); backdrop-filter: blur(6px); }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--s3); }
 .card.tap { transition: border-color 0.4s var(--ease), background 0.4s var(--ease); }
 .card.tap:active { background: var(--surface-2); border-color: var(--border-hover); }
 .btn {
