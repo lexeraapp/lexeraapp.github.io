@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { BadgeBook } from "../engine/Badges.ts";
-import { Levels } from "../engine/Rewards.ts";
+import { DAILY_GOALS, Levels } from "../engine/Rewards.ts";
 import { Icon } from "../ui/Icon.tsx";
 import { Medal } from "../ui/Medal.tsx";
 import { Ring } from "../ui/Ring.tsx";
@@ -86,7 +86,7 @@ export function You() {
           <div className="li goalrow">
             <span className="grow">Daily goal</span>
             <div className="seg mini">
-              {[20, 40, 60].map((g) => <button key={g} className={d.goal === g ? "on" : ""} onClick={() => s.update((x) => { x.goal = g; })}>{g}</button>)}
+              {DAILY_GOALS.map((g) => <button key={g.xp} className={d.goal === g.xp ? "on" : ""} onClick={() => s.update((x) => { x.goal = g.xp; })}>{g.xp}</button>)}
             </div>
           </div>
           <Toggle label="Sound effects" on={d.settings.sound} onChange={(v) => s.update((x) => { x.settings.sound = v; })} />

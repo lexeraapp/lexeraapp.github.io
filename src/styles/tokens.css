@@ -39,7 +39,10 @@
   --col: 520px;
   --safe-t: env(safe-area-inset-top, 0px);
   --safe-b: env(safe-area-inset-bottom, 0px);
-  --tab-h: 64px;
+  --tab-h: 58px;
+  /* The bar hugs the bottom edge: only a sliver of the home-indicator inset is added, so every page shows it in the same spot. */
+  --tab-pad: max(6px, calc(var(--safe-b) - 16px));
+  --tab-total: calc(var(--tab-h) + var(--tab-pad));
   /* Space under the status bar. An installed iPhone app draws beneath a translucent status bar. */
   --top: var(--safe-t);
 
@@ -50,8 +53,9 @@
 :root[data-phase="intermediate"] { --light: rgba(118, 150, 158, 0.085); --accent: #78919a; }
 :root[data-phase="advanced"] { --light: rgba(201, 191, 166, 0.075); --accent: #a39d8c; }
 
-@keyframes surface { from { opacity: 0; filter: blur(6px) brightness(0.7); } to { opacity: 1; filter: none; } }
-@keyframes fadeUp { from { opacity: 0; transform: translateY(18px); filter: blur(2px); } to { opacity: 1; transform: none; filter: none; } }
+/* Opacity only: a blur or transform here made whole pages look smeared on every tab switch. */
+@keyframes surface { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @keyframes breathe { 0%, 100% { opacity: 0.35; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.06); } }
 @keyframes drift { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
 @keyframes rise { from { opacity: 0; transform: translateY(100%); } to { opacity: 1; transform: none; } }

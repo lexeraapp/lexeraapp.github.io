@@ -1,18 +1,13 @@
 import { useState } from "react";
 import { Icon } from "../ui/Icon.tsx";
 import { LogoMark } from "../ui/Logo.tsx";
+import { DAILY_GOALS as GOALS, DEFAULT_GOAL } from "../engine/Rewards.ts";
 import { useInstall, useStore } from "../ui/context.tsx";
-
-const GOALS = [
-  { xp: 20, name: "Light", note: "about 5 minutes a day" },
-  { xp: 40, name: "Steady", note: "about 10 minutes a day" },
-  { xp: 60, name: "Serious", note: "about 15 minutes a day" },
-];
 
 export function Welcome() {
   const s = useStore();
   const install = useInstall();
-  const [goal, setGoal] = useState(40);
+  const [goal, setGoal] = useState(DEFAULT_GOAL);
   return (
     <main className="screen welcome">
       <div className="welcome-mark"><LogoMark size={92} /></div>

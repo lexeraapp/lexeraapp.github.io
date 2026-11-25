@@ -114,7 +114,7 @@ Turkish is agglutinative. It builds meaning by attaching suffixes to a stem (`ev
 <img src="assets/icons/ember.svg" width="20" height="20" align="absmiddle" alt=""/> **Rewards**
 - XP, five craft level titles and 19 badges
 - Streak freezes cover missed days, no lives
-- Daily goal of 20, 40 or 60 XP
+- Daily goal of 40, 80 or 140 XP (a lesson is worth about 40)
 - Five week activity heat map
 
 </td>

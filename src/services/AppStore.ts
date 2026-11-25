@@ -7,7 +7,7 @@ import { Content } from "../engine/Content.ts";
 import { DifficultyDirector } from "../engine/DifficultyDirector.ts";
 import { ExerciseFactory } from "../engine/ExerciseFactory.ts";
 import { PracticeSession, type SessionSummary } from "../engine/PracticeSession.ts";
-import { Levels, type LevelInfo } from "../engine/Rewards.ts";
+import { Levels, XpRules, type LevelInfo } from "../engine/Rewards.ts";
 import { freshSave, migrate, type SaveData } from "../engine/SaveData.ts";
 import { ReviewScheduler, type Mastery } from "../engine/Scheduler.ts";
 import { SessionPlanner } from "../engine/SessionPlanner.ts";
@@ -26,6 +26,8 @@ export type SessionSpec =
 
 export interface CommitResult {
   xp: number;
+  /** Share of the session's XP paid, below 1 when the same session was already played today. */
+  repeatFactor: number;
   levelBefore: LevelInfo;
   levelAfter: LevelInfo;
   leveledUp: boolean;
@@ -201,9 +203,14 @@ export class AppStore {
     for (const [key, verdict] of Object.entries(sum.results) as [string, Verdict][]) {
       d.items[key] = ReviewScheduler.grade(d.items[key], verdict, now, Math.random());
     }
-    d.xp += sum.xp;
     const day = d.days[today] ?? { xp: 0, sessions: 0 };
-    day.xp += sum.xp; day.sessions += 1;
+    const playKey = sum.mode === "lesson" || sum.mode === "gate" ? `${sum.mode}:${sum.lessonId ?? sum.phase}` : sum.mode;
+    const plays = day.plays ?? {};
+    const repeatFactor = XpRules.repeatFactor(plays[playKey] ?? 0);
+    const awarded = Math.round(sum.xp * repeatFactor);
+    plays[playKey] = (plays[playKey] ?? 0) + 1;
+    d.xp += awarded;
+    day.xp += awarded; day.sessions += 1; day.plays = plays;
     d.days[today] = day;
 
     d.stats.answered += sum.scored;
@@ -234,7 +241,7 @@ export class AppStore {
     }
 
     let streakExtended = false, earnedFreeze = false;
-    if (sum.xp > 0 && sum.scored >= 3) {
+    if (sum.scored >= 3 && sum.xp > 0) {
       const ch = StreakKeeper.touch(d.streak, today);
       d.streak = ch.state; streakExtended = ch.extended; earnedFreeze = ch.earnedFreeze;
     }
@@ -253,7 +260,7 @@ export class AppStore {
     d.onboarded = true;
     this.commitData();
     return {
-      xp: sum.xp, levelBefore, levelAfter, leveledUp: levelAfter.level > levelBefore.level, newBadges: earned,
+      xp: awarded, repeatFactor, levelBefore, levelAfter, leveledUp: levelAfter.level > levelBefore.level, newBadges: earned,
       streakExtended, streakCount: d.streak.count, earnedFreeze, goalReached, passed, unlockedPhase, speedRecord,
     };
   }
