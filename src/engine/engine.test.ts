@@ -5,7 +5,8 @@ import { Content } from "./Content.ts";
 import { DifficultyDirector } from "./DifficultyDirector.ts";
 import { ExerciseFactory } from "./ExerciseFactory.ts";
 import { PracticeSession } from "./PracticeSession.ts";
-import { Levels } from "./Rewards.ts";
+import { DAILY_GOALS, Levels, XpRules } from "./Rewards.ts";
+import { migrate } from "./SaveData.ts";
 import { ReviewScheduler } from "./Scheduler.ts";
 import { SessionPlanner } from "./SessionPlanner.ts";
 import { StreakKeeper } from "./Streak.ts";
@@ -131,5 +132,57 @@ describe("full lesson simulation", () => {
         if (skill === 1) expect(sum.stars).toBe(3);
       }
     }
+  });
+});
+
+describe("XP scale", () => {
+  const play = (skill: number, seed: number, mode: "lesson" = "lesson") => {
+    const lesson = library.lessons[seed % library.lessons.length]!;
+    const rng = new Rng(seed);
+    const planner = new SessionPlanner(library, rng);
+    const s = new PracticeSession({
+      mode, title: lesson.title, lessonId: lesson.id, phase: lesson.phase,
+      slots: planner.lesson(lesson, {}, Date.now()),
+      factory: new ExerciseFactory({ rng, speechAvailable: true }),
+      director: new DifficultyDirector(1.5), content: new Content(library),
+      wordPool: [...lesson.words, ...library.lessonsBefore(lesson.id).flatMap((l) => l.words)], sentencePool: lesson.sentences,
+    });
+    let guard = 0;
+    while (!s.finished && guard++ < 200) {
+      const ex = s.current!;
+      if (ex.kind === "intro") { s.advance(); continue; }
+      const good = rng.chance(skill);
+      let a: unknown;
+      switch (ex.kind) {
+        case "choice": case "listen": a = good ? (ex as import("./exercises/Exercise.ts").ChoiceExercise).answerId : "nope"; break;
+        case "typing": a = good ? (ex as TypingExercise).answer : "zzz"; break;
+        case "build": a = good ? (ex as import("./exercises/Exercise.ts").BuildExercise).answer : []; break;
+        case "cloze": a = good ? (ex as import("./exercises/Exercise.ts").ClozeExercise).answer : "?"; break;
+        case "match": a = { missedIds: good ? [] : ex.refs.map((r) => r.id) }; break;
+      }
+      s.submit(a); s.advance();
+    }
+    return s.summary().xp;
+  };
+  it("a lesson is worth tens of xp, never hundreds, and quality pays more", () => {
+    const avg = (skill: number) => [1, 2, 3, 4, 5, 6, 7, 8].reduce((t, i) => t + play(skill, i), 0) / 8;
+    const perfect = avg(1), good = avg(0.85), poor = avg(0.6);
+    expect(perfect).toBeGreaterThan(30);
+    expect(perfect).toBeLessThan(60);
+    expect(good).toBeLessThan(perfect);
+    expect(poor).toBeLessThan(good);
+  });
+  it("goals are ordered and repeats pay less", () => {
+    expect(DAILY_GOALS.map((g) => g.xp)).toEqual([...DAILY_GOALS.map((g) => g.xp)].sort((a, b) => a - b));
+    expect(XpRules.repeatFactor(0)).toBe(1);
+    expect(XpRules.repeatFactor(1)).toBeLessThan(1);
+    expect(XpRules.repeatFactor(9)).toBeLessThan(XpRules.repeatFactor(1));
+  });
+  it("migrates old inflated saves once", () => {
+    const m = migrate({ v: 1, xp: 1200, goal: 60, days: { "2026-11-01": { xp: 300, sessions: 2 } } });
+    expect(m.xp).toBe(200);
+    expect(m.goal).toBe(140);
+    expect(m.days["2026-11-01"]?.xp).toBe(50);
+    expect(migrate(m).xp).toBe(200);
   });
 });

@@ -71,7 +71,7 @@ export class PracticeSession {
   private retries = 0;
   private combo = 0;
   private bestCombo = 0;
-  private xp = 0;
+  private points = 0;
   private scored = 0;
   private correct = 0;
   private near = 0;
@@ -100,7 +100,7 @@ export class PracticeSession {
     return Math.min(1, this.answeredCount / Math.max(1, this.scoredTotal + this.retries));
   }
   get comboNow(): number { return this.combo; }
-  get xpNow(): number { return this.xp; }
+  get xpNow(): number { return Math.round(this.points * XpRules.modeWeight(this.opts.mode)); }
   get tierNow(): number { return this.opts.director.tier; }
   get stageNow(): Stage { return this.queue[this.index]?.stage ?? "cool"; }
 
@@ -138,9 +138,10 @@ export class PracticeSession {
     else if (v === "near") { this.near += 1; this.combo = 0; }
     else { this.wrong += 1; this.combo = 0; }
     this.bestCombo = Math.max(this.bestCombo, this.combo);
-    const gained = XpRules.forAnswer(v, ex.tier, this.combo) * (this.opts.mode === "review" ? 0.8 : 1);
-    const xp = Math.round(gained);
-    this.xp += xp;
+    const before = this.xpNow;
+    this.points += XpRules.forAnswer(v, ex.tier, this.combo);
+    // Shown per answer as the change in the running total, so the numbers always add up.
+    const xp = this.xpNow - before;
     this.opts.director.record(v !== "wrong");
     const perRef = outcome.perRef ?? Object.fromEntries(ex.refs.map((r) => [refKey(r), v]));
     for (const [k, verdict] of Object.entries(perRef)) if (!this.first.has(k)) this.first.set(k, verdict);
@@ -168,13 +169,14 @@ export class PracticeSession {
   summary(): SessionSummary {
     const accuracy = this.scored ? (this.correct + this.near * 0.5) / this.scored : 0;
     const perfect = this.wrong === 0 && this.near === 0 && this.scored >= 8 && this.opts.mode !== "speed";
-    const bonus = this.opts.mode === "speed" ? 0 : (perfect ? 10 : 0) + (accuracy >= 0.9 ? 5 : 0);
+    const stars = XpRules.stars(accuracy);
+    const { xp, bonus } = XpRules.session({ mode: this.opts.mode, points: this.points, scored: this.scored, accuracy, stars, perfect });
     const results: Record<string, Verdict> = {};
     for (const [k, v] of this.first) results[k] = v;
     return {
       mode: this.opts.mode, lessonId: this.opts.lessonId, phase: this.opts.phase,
       scored: this.scored, correct: this.correct, near: this.near, wrong: this.wrong, accuracy,
-      stars: XpRules.stars(accuracy), xp: this.xp + bonus, bonusXp: bonus, bestCombo: this.bestCombo,
+      stars, xp, bonusXp: bonus, bestCombo: this.bestCombo,
       durationMs: (this.opts.now ?? Date.now)() - this.started, results, kindRight: this.kindRight,
       newWordIds: this.seenIntro, perfect, skillAfter: this.opts.director.level,
     };
