@@ -1,5 +1,5 @@
 /* Lexera service worker: offline app shell with safe update behaviour. */
-const VERSION = "lexera-v1";
+const VERSION = "lexera-v2";
 const SCOPE = self.registration.scope;
 
 self.addEventListener("install", (event) => {
