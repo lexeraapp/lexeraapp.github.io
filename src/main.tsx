@@ -13,12 +13,15 @@ import "./styles/play.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./App.tsx";
+import { mountIosHaptics } from "./services/IosHaptics.ts";
 
 createRoot(document.getElementById("root") as HTMLElement).render(
   <StrictMode>
     <App />
   </StrictMode>,
 );
+
+mountIosHaptics();
 
 if ("serviceWorker" in navigator && import.meta.env.PROD) {
   window.addEventListener("load", () => {

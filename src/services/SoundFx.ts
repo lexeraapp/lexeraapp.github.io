@@ -1,3 +1,4 @@
+import { iosFallbackTick, isIOS } from "./IosHaptics.ts";
 type Tone = { f: number; t: number; d: number; type?: OscillatorType; g?: number };
 
 /** Tiny synthesized sound set, no audio files. Quiet and low by design. */
@@ -46,7 +47,14 @@ export class SoundFx {
 export class Haptics {
   enabled = true;
   private buzz(p: number | number[]): void {
-    if (this.enabled && "vibrate" in navigator) navigator.vibrate(p);
+    if (!this.enabled) return;
+    try {
+      if ("vibrate" in navigator) navigator.vibrate(p);
+      else if (isIOS) {
+        iosFallbackTick();
+        if (Array.isArray(p) && p.length > 2) window.setTimeout(iosFallbackTick, 90);
+      }
+    } catch { /* unsupported */ }
   }
   tap(): void { this.buzz(8); }
   correct(): void { this.buzz(12); }

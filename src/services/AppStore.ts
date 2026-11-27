@@ -89,6 +89,7 @@ export class AppStore {
     this.speech.enabled = s.speech;
     this.speech.rate = s.speechRate;
     this.haptics.enabled = s.haptics;
+    document.documentElement.classList.toggle("haptics-off", !s.haptics);
     document.documentElement.dataset.motion = s.reduceMotion ? "reduced" : "full";
   }
 
