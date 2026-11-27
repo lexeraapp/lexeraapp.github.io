@@ -81,5 +81,5 @@ h3 { font-size: 1.3rem; }
 
 /* iPhone haptics: invisible switch laid over each control (see src/services/IosHaptics.ts) */
 .hx-host { position: relative; }
-.hx { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; opacity: 0.02; z-index: 3; -webkit-appearance: none; appearance: none; background: transparent; border: 0; cursor: pointer; }
+.hx { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; opacity: 0.02; z-index: 3; -webkit-appearance: none; appearance: none; background: transparent; border: 0; cursor: pointer; touch-action: pan-x pan-y; }
 .haptics-off .hx { display: none; }
