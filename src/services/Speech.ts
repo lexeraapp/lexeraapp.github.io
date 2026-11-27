@@ -17,10 +17,7 @@ export class Speech {
     };
     load();
     window.speechSynthesis.addEventListener?.("voiceschanged", load);
-    if (typeof document !== "undefined") {
-      const prime = (): void => this.unlock();
-      for (const type of ["pointerdown", "touchend", "click", "keydown"]) document.addEventListener(type, prime, { once: true, capture: true });
-    }
+    this.armUnlock();
   }
   static get supported(): boolean {
     return typeof window !== "undefined" && "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
@@ -33,16 +30,39 @@ export class Speech {
     return () => this.listeners.delete(fn);
   }
   private unlocked = false;
-  /** iOS Safari only lets speech start after a real tap. Prime the engine silently on the first touch of the app,
-   *  so the first word of a session (spoken from an effect, not from a tap) is not dropped. */
-  unlock(): void {
-    if (this.unlocked || !Speech.supported) return;
+  private priming = false;
+  private primeEvents = ["touchend", "pointerup", "click"] as const;
+  private readonly onGesture = (): void => this.unlock();
+
+  /**
+   * iOS Safari starts speech only after the page has spoken once from inside a real tap. Words that play on their
+   * own (the first word of a session is spoken from an effect, not from a tap) are dropped until then, which is
+   * why the first word stayed silent and every later one worked. Prime the engine with a silent utterance from the
+   * first genuine tap. Only touchend, pointerup and click count as activation: pointerdown and touchstart do not,
+   * so those must not be used. The listeners stay until the engine confirms it has really started speaking.
+   */
+  private armUnlock(): void {
+    if (typeof document === "undefined") return;
+    for (const type of this.primeEvents) document.addEventListener(type, this.onGesture, { capture: true, passive: true });
+  }
+  private markUnlocked(): void {
     this.unlocked = true;
+    this.priming = false;
+    for (const type of this.primeEvents) document.removeEventListener(type, this.onGesture, { capture: true });
+  }
+  unlock(): void {
+    if (this.unlocked || this.priming || !Speech.supported) return;
+    this.priming = true;
     try {
-      const u = new SpeechSynthesisUtterance(" ");
+      const u = new SpeechSynthesisUtterance(".");
       u.volume = 0;
+      if (this.voice) { u.voice = this.voice; u.lang = this.voice.lang; }
+      u.onstart = () => this.markUnlocked();
+      u.onend = () => this.markUnlocked();
+      u.onerror = () => { this.priming = false; };
       window.speechSynthesis.speak(u);
-    } catch { /* ignore */ }
+      window.setTimeout(() => { this.priming = false; }, 1500);
+    } catch { this.priming = false; }
   }
   speak(text: string, slow = false): void {
     if (!this.enabled || !Speech.supported) return;
@@ -57,6 +77,7 @@ export class Speech {
       u.voice = this.voice;
       u.lang = this.voice.lang;
       u.rate = slow ? Math.max(0.4, this.rate - 0.4) : this.rate;
+      u.onstart = () => { if (!this.unlocked) this.markUnlocked(); };
       synth.speak(u);
       if (synth.paused) synth.resume();
     };
